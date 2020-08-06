@@ -1,4 +1,5 @@
 // program to find duplicate lines in standard input
+// or from filenames in arg
 
 package main
 
