@@ -1,34 +1,33 @@
-// 1.5 Fetching a URL
-// fetches the contents of each URL and prints them uninterpreted
-// inspired by curl
+// exercise 1.7 Fetching a URL
+// use io.Copy(dst, src) so to not use a buffer in between
 
 package main
 
 import (
     "fmt"
-    "io/ioutil"
+    "io"
     "net/http"
     "os"
-    "time"
+    "strings"
 )
 
 func main() {
 
     for _, url := range os.Args[1:] {
-        start := time.Now()
+        if !strings.HasPrefix(url, "http://") {
+            url = "http://" + url
+        }
         resp, err := http.Get(url)
         if err != nil {
             fmt.Fprintf(os.Stderr, "fetch: %v\n", err)
             os.Exit(1)
         }
-        b, err := ioutil.ReadAll(resp.Body)
-        fmt.Printf("Time to load url: %s: %v seconds\n", url, time.Since(start).Seconds())
+        _, err = io.Copy(os.Stdout, resp.Body)
         resp.Body.Close()
         if err != nil {
             fmt.Fprintf(os.Stderr, "fetch: reading %s: %v\n", url, err)
             os.Exit(1)
         }
-        fmt.Printf("%s", b)
     }
 
 }
